@@ -79,7 +79,7 @@ upgrade_environment() {
     echo "Upgrading execution runtime from version $CURRENT_VERSION to $LATEST_RUNTIME_ENV_VERSION..."
 
     if [ "$CURRENT_VERSION" -lt "$FIRST_TIME_VERSION" ]; then
-        apt-get install -y --no-install-recommends libgl1
+        apt-get update && apt-get install -y --no-install-recommends libgl1
         apt-get install -y fonts-unifont fonts-ubuntu || apt-get install -y ttf-unifont ttf-ubuntu-font-family
         /kepilot/micromamba/bin/micromamba run -n kepilot poetry run playwright install --with-deps chromium || \
             (apt-get install -y libnss3 libnspr4 libatk1.0-0 libatspi2.0-0 libxcomposite1 libxdamage1 libxrandr2 libxkbcommon0 && \
