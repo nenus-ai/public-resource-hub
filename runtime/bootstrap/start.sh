@@ -159,9 +159,8 @@ start()
     exec /bin/bash -c "$COMMAND_TO_RUNTIME"
 }
 
-# log upgrade errors and output to /kepilot/logs/bootstrap.log
 {
     upgrade
-} >> /opt/runtime/bootstrap.log 2>&1
+} 2>&1 | tee /opt/runtime/bootstrap.log
 
 start
