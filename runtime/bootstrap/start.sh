@@ -101,7 +101,9 @@ upgrade_environment() {
 upgrade_runtime_code() {
     set -e
 
-    VERSION_FILE="/opt/runtime/execution_runtime_code_version.txt"
+    mkdir -p /kepilot/code
+
+    VERSION_FILE="/kepilot/code/openhands/execution_runtime_code_version.txt"
     PRIMITIVE_TIME_VERSION="251201" # the version before we introduced the version tracking
 
     CURRENT_VERSION=$PRIMITIVE_TIME_VERSION
@@ -124,8 +126,6 @@ upgrade_runtime_code() {
     if [ -d /kepilot/code/openhands ]; then
         rm -rf /kepilot/code/openhands
     fi
-
-    mkdir -p /kepilot/code
 
     mv "$TEMP_DIR/code/openhands" /kepilot/code/openhands
     mv "$TEMP_DIR/code/poetry.lock" /kepilot/code/poetry.lock
