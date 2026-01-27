@@ -74,16 +74,20 @@ upgrade_environment() {
 
         mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/kepilot-memory-monitor && \
         cp -r /kepilot/code/openhands/runtime/utils/vscode-extensions/memory-monitor/* ${OPENVSCODE_SERVER_ROOT}/extensions/kepilot-memory-monitor/
+
+        echo "$PRIMITIVE_TIME_VERSION" > "$VERSION_FILE"
     fi
 
     echo "Upgrading execution runtime from version $CURRENT_VERSION to $LATEST_RUNTIME_ENV_VERSION..."
 
     if [ "$CURRENT_VERSION" -lt "$FIRST_TIME_VERSION" ]; then
         apt-get update && apt-get install -y --no-install-recommends libgl1
-        apt-get install -y fonts-unifont fonts-ubuntu || apt-get install -y ttf-unifont ttf-ubuntu-font-family
+        apt-get install -y fonts-unifont fonts-ubuntu || apt-get install -y ttf-unifont ttf-ubuntu-font-family || true
         /kepilot/micromamba/bin/micromamba run -n kepilot poetry run playwright install --with-deps chromium || \
             (apt-get install -y libnss3 libnspr4 libatk1.0-0 libatspi2.0-0 libxcomposite1 libxdamage1 libxrandr2 libxkbcommon0 && \
             /kepilot/micromamba/bin/micromamba run -n kepilot poetry run playwright install chromium)
+
+        echo "$FIRST_TIME_VERSION" > "$VERSION_FILE"
     fi
 
     # write the latest version to the version file
