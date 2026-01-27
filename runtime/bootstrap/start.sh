@@ -73,8 +73,6 @@ upgrade_environment() {
         # Copy Project source files
         if [ -d /kepilot/code/openhands ]; then rm -rf /kepilot/code/openhands; fi
 
-        pull_latest_code()
-
         # install_vscode_extensions
         mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/kepilot-hello-world && \
         cp -r /kepilot/code/openhands/runtime/utils/vscode-extensions/hello-world/* ${OPENVSCODE_SERVER_ROOT}/extensions/kepilot-hello-world/
