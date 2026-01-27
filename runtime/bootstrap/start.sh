@@ -48,10 +48,8 @@ upgrade_environment() {
         /kepilot/micromamba/bin/micromamba create -n kepilot -y && \
             /kepilot/micromamba/bin/micromamba install -n kepilot -c conda-forge poetry python=3.12 -y
 
-        if [ -d /kepilot/code ]; then rm -rf /kepilot/code;
-
         # install_dependencies
-        mkdir -p /kepilot/code && cd /kepilot/code
+        cd /kepilot/code
 
         /kepilot/micromamba/bin/micromamba config set changeps1 False && \
         /kepilot/micromamba/bin/micromamba run -n kepilot poetry config virtualenvs.path /kepilot/poetry && \
@@ -69,9 +67,6 @@ upgrade_environment() {
 
         /kepilot/micromamba/bin/micromamba run -n kepilot poetry cache clear --all . -n && \
         /kepilot/micromamba/bin/micromamba clean --all
-
-        # Copy Project source files
-        if [ -d /kepilot/code/openhands ]; then rm -rf /kepilot/code/openhands; fi
 
         # install_vscode_extensions
         mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/kepilot-hello-world && \
@@ -113,10 +108,6 @@ upgrade_runtime_code() {
         return
     fi
 
-    # download the latest code package from https://raw.githubusercontent.com/nenus-ai/public-resource-hub/master/runtime/packages/runtime_execution_server.260101.tar.gz
-    # unzip, the unziped folder is code/
-    # remove the existing /kepilot/code/ folder
-    # move the unzipped code/ folder to /kepilot/code/
     echo "Upgrading execution runtime code from version $CURRENT_VERSION to $LATEST_RUNTIME_CODE_VERSION..."
     REMOTE_URL="https://raw.githubusercontent.com/nenus-ai/public-resource-hub/master/runtime/packages/runtime_execution_server.$LATEST_RUNTIME_CODE_VERSION.tar.gz"
     # Download and extract the package into a temporary directory
@@ -124,14 +115,16 @@ upgrade_runtime_code() {
     curl -L "$REMOTE_URL" -o "$TEMP_DIR/runtime_code.tar.gz"
     tar -xzf "$TEMP_DIR/runtime_code.tar.gz" -C "$TEMP_DIR"
 
-    # Remove the existing /kepilot/code/ folder
-    if [ -d /kepilot/code ]; then
-        rm -rf /kepilot/code
+    if [ -d /kepilot/code/openhands ]; then
+        rm -rf /kepilot/code/openhands
     fi
-    # Move the unzipped code/ folder to /kepilot/code/
-    mv "$TEMP_DIR/code" /kepilot/code
 
-    # cp /kepilot/code/openhands/pyproject.toml  /kepilot/code/openhands/poetry.lock /kepilot/code/
+    mkdir -p /kepilot/code
+
+    mv "$TEMP_DIR/code/openhands" /kepilot/code/openhands
+    mv "$TEMP_DIR/code/poetry.lock" /kepilot/code/poetry.lock
+    mv "$TEMP_DIR/code/pyproject.toml" /kepilot/code/pyproject.toml
+
     chmod a+rwx /kepilot/code/openhands/__init__.py
 
     # Clean up the temporary directory
@@ -145,8 +138,8 @@ upgrade_runtime_code() {
 
 function upgrade() {
     set -e
-    upgrade_environment
     upgrade_runtime_code
+    upgrade_environment
     set +e
 }
 
