@@ -167,6 +167,6 @@ start()
 
 {
     upgrade
-} 2>&1 | tee /opt/runtime/bootstrap.log
+} 2>&1 | tee -a /opt/runtime/bootstrap.log
 
 start
