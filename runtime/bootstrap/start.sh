@@ -154,7 +154,7 @@ start()
     echo "*******************************************************************************************************"
     echo "*********************Starting execution runtime environment at $(date +"%Y-%m-%d %T")*********************"
 
-    COMMAND_TO_RUNTIME="/kepilot/micromamba/bin/micromamba run -n kepilot poetry run python -u -m openhands.runtime.action_execution_server 12000 --working-dir /workspace --plugins agent_skills vscode --user-id 1000"
+    COMMAND_TO_RUNTIME="/kepilot/micromamba/bin/micromamba run -n kepilot poetry run python -u -m openhands.runtime.action_execution_server 12000 --working-dir /workspace --plugins agent_skills vscode --username root --user-id 0"
 
     export POETRY_VIRTUALENVS_PATH="/kepilot/poetry"
     export MAMBA_ROOT_PREFIX=/kepilot/micromamba
