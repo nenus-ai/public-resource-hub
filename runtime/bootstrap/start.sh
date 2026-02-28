@@ -1,6 +1,9 @@
 #! /bin/bash
 
+# The following version is not changable anymore
 LATEST_RUNTIME_ENV_VERSION="260101"
+
+# package version
 LATEST_RUNTIME_CODE_VERSION="260206"
 
 upgrade_environment() {
