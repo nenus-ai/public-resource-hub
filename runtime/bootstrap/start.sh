@@ -160,7 +160,10 @@ start()
     export MAMBA_ROOT_PREFIX=/kepilot/micromamba
     export OPENVSCODE_SERVER_ROOT=/kepilot/.openvscode-server
     export PATH="/kepilot/bin:${PATH}"
-
+    venv_path=$(ls -d $POETRY_VIRTUALENVS_PATH/kepilot-ai-*-py*/bin 2>/dev/null | head -n 1)
+    if [ -n "$venv_path" ] && [ -f "$venv_path/python" ]; then
+        export PATH="$venv_path:$PATH"
+    fi
     # execute the command to start the runtime environment
     echo "Starting execution runtime environment..."
     exec /bin/bash -c "$COMMAND_TO_RUNTIME"
