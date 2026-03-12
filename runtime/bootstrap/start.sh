@@ -81,6 +81,15 @@ upgrade_environment() {
 
     echo "Upgrading execution runtime from version $CURRENT_VERSION to $LATEST_RUNTIME_ENV_VERSION..."
 
+    if [ "$CURRENT_VERSION" -lt "$SECOND_TIME_VERSION" ]; then
+        # Setup debconf non-interactive frontend and UTC timezone before any apt-get calls - non-fatal, best-effort
+        (
+            echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections || true
+            ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime || true
+            echo "Etc/UTC" | tee /etc/timezone || true
+        ) || true
+    fi
+
     if [ "$CURRENT_VERSION" -lt "$FIRST_TIME_VERSION" ]; then
         cd /kepilot/code
 
@@ -94,11 +103,6 @@ upgrade_environment() {
     fi
 
     if [ "$CURRENT_VERSION" -lt "$SECOND_TIME_VERSION" ]; then
-        # Setup debconf non-interactive frontend and UTC timezone - non-fatal
-        (echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
-          ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
-          echo "Etc/UTC" | tee /etc/timezone) || true
-
         echo "$SECOND_TIME_VERSION" > "$VERSION_FILE"
     fi
 
