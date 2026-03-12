@@ -1,6 +1,6 @@
 #! /bin/bash
 
-LATEST_RUNTIME_ENV_VERSION="260101"
+LATEST_RUNTIME_ENV_VERSION="260312"
 LATEST_RUNTIME_CODE_VERSION="260206"
 
 upgrade_environment() {
@@ -12,6 +12,7 @@ upgrade_environment() {
     OPENHANDS_TIME_VERSION="250501" # very old version from openhands
     PRIMITIVE_TIME_VERSION="251201" # the version before we introduced the version tracking
     FIRST_TIME_VERSION="260101" # the first version with version tracking
+    SECOND_TIME_VERSION="260312" # adds debconf/timezone non-interactive setup
 
     CURRENT_VERSION=$PRIMITIVE_TIME_VERSION
 
@@ -80,6 +81,15 @@ upgrade_environment() {
 
     echo "Upgrading execution runtime from version $CURRENT_VERSION to $LATEST_RUNTIME_ENV_VERSION..."
 
+    if [ "$CURRENT_VERSION" -lt "$SECOND_TIME_VERSION" ]; then
+        # Setup debconf non-interactive frontend and UTC timezone before any apt-get calls - non-fatal, best-effort
+        (
+            echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections || true
+            ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime || true
+            echo "Etc/UTC" | tee /etc/timezone || true
+        ) || true
+    fi
+
     if [ "$CURRENT_VERSION" -lt "$FIRST_TIME_VERSION" ]; then
         cd /kepilot/code
 
@@ -90,6 +100,10 @@ upgrade_environment() {
             /kepilot/micromamba/bin/micromamba run -n kepilot poetry run playwright install chromium)
 
         echo "$FIRST_TIME_VERSION" > "$VERSION_FILE"
+    fi
+
+    if [ "$CURRENT_VERSION" -lt "$SECOND_TIME_VERSION" ]; then
+        echo "$SECOND_TIME_VERSION" > "$VERSION_FILE"
     fi
 
     # write the latest version to the version file
